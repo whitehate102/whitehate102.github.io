@@ -1,2 +1,1 @@
-# page
- whitehate102.github.io
+# whitehate102-whitehate102.github.io
