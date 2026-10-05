@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Starlight Stories: Planet Hunter</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Orbitron:wght@600;800&family=Space+Grotesk:wght@400;600&display=swap">
+<style>
+:root{--bg:#070b1a;--panel:#10173099;--solid:#101730;--ink:#eef1ff;--mute:#9aa4c7;--amber:#ffb347;--teal:#5ad1c8;--bad:#ff6b6b;--line:#2a3558;--on:#1a1200;--st:#cfd8ff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef0fa;--panel:#ffffffcc;--solid:#fff;--ink:#16203d;--mute:#586089;--amber:#b36a00;--teal:#0d7f77;--bad:#c62828;--line:#c9cfe8;--on:#fff;--st:#7a86b8}}
+:root[data-theme="light"]{--bg:#eef0fa;--panel:#ffffffcc;--solid:#fff;--ink:#16203d;--mute:#586089;--amber:#b36a00;--teal:#0d7f77;--bad:#c62828;--line:#c9cfe8;--on:#fff;--st:#7a86b8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Space Grotesk","Hind Siliguri",system-ui,sans-serif}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+main{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:16px 18px 70px}
+h1,h2,.big{font-family:Orbitron,"Hind Siliguri",sans-serif;letter-spacing:.5px}
+h1{font-size:clamp(30px,7vw,58px);line-height:1.05;margin:18px 0 8px;font-weight:800;text-shadow:0 0 30px color-mix(in srgb,var(--amber) 55%,transparent)}
+h2{font-size:clamp(20px,4vw,28px);margin:6px 0 8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.glass{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:16px;padding:18px}
+.hud{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-weight:600;margin:10px 0}
+.hud span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 14px}
+.heart{color:var(--bad)}.xp{color:var(--amber)}.cmb{color:var(--teal)}
+button{font:600 15px "Space Grotesk","Hind Siliguri",sans-serif;background:var(--amber);color:var(--on);border:0;border-radius:10px;padding:12px 20px;cursor:pointer;box-shadow:0 0 18px color-mix(in srgb,var(--amber) 40%,transparent)}
+button.alt{background:var(--panel);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+button.sm{padding:6px 12px;font-size:13px}
+button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:18px 0}
+.mis{text-align:center;transition:transform .2s}.mis:hover{transform:translateY(-4px)}
+.mis.lock{opacity:.5}
+.orb{width:96px;height:96px;border-radius:50%;margin:6px auto 10px;display:grid;place-items:center;font:800 34px Orbitron,sans-serif;background:radial-gradient(circle at 32% 30%,var(--pc,#394266 0,#151b33));box-shadow:0 0 34px color-mix(in srgb,var(--amber) 35%,transparent)}
+.stars{color:var(--amber);letter-spacing:3px;font-size:20px}
+canvas#cv{width:100%;height:clamp(260px,46vh,380px);display:block;background:var(--solid);border:1px solid var(--line);border-radius:14px;touch-action:manipulation;cursor:crosshair}
+.opt{display:block;width:100%;text-align:left;background:var(--panel);color:var(--ink);border:1px solid var(--line);margin:9px 0;box-shadow:none;font-weight:400;font-size:17px}
+.opt.ok{border-color:var(--teal);background:color-mix(in srgb,var(--teal) 22%,var(--solid))}.opt.no{border-color:var(--bad);opacity:.7}
+.msg{font-weight:600;min-height:26px;margin:10px 0}.good{color:var(--teal)}.warn{color:var(--bad)}
+.note{font-size:14px;color:var(--mute)}
+.rank{height:8px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:6px}.rank i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--amber))}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}.stats small{display:block;color:var(--mute);font-size:12px}.stats b{font-size:19px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.sun{width:70px;height:70px;border-radius:50%;position:relative;flex:none;background:radial-gradient(circle at 40% 35%,#fff6d8,#ffb347);box-shadow:0 0 40px #ffb34788}.pl{position:absolute;width:18px;height:18px;border-radius:50%;background:#070b1a;top:26px;left:26px}
+@media (prefers-reduced-motion:no-preference){.pl{animation:tr 4s linear infinite}@keyframes tr{from{left:-22px}to{left:76px}}
+.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}.fade{animation:f .4s ease}@keyframes f{from{opacity:0;transform:translateY(8px)}}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<main>
+<div class="top"><div class="note" id="rk"></div><div><button class="alt sm" data-a="snd" id="sb">♪</button> <button class="alt sm" data-a="lang" id="lb"></button></div></div>
+<div id="v"></div>
+</main>
+<script>
+const ST=[
+{n:'Nova-1',P:3.2,t0:1.1,dur:.18,d:.012,Rs:.9,T:5400,M:.95,nz:.0022,pc:'#ffd29a,#d9622b 55%,#4a1608',lv:['Rookie','নবীন']},
+{n:'Nova-2',P:4.5,t0:1.6,dur:.2,d:.004,Rs:1,T:5800,M:1,nz:.0018,pc:'#cfe8ff,#4b86c8 55%,#10264a',lv:['Pilot','পাইলট']},
+{n:'Nova-3',P:6.1,t0:1.3,dur:.17,d:.0016,Rs:.8,T:4800,M:.85,nz:.0011,pc:'#e5d4ff,#8a5bd0 55%,#2a1050',lv:['Commander','কমান্ডার']}];
+const CL=[['Gas giant (over 8 × Earth)','গ্যাস দৈত্য (পৃথিবীর ৮ গুণের বেশি)'],['Neptune-like (4.5 to 8 × Earth)','নেপচুন-সদৃশ (পৃথিবীর ৪.৫ থেকে ৮ গুণ)'],['Super-Earth (under 4.5 × Earth)','সুপার-আর্থ (পৃথিবীর ৪.৫ গুণের কম)']];
+const RK=[[0,'Cadet','ক্যাডেট'],[500,'Observer','পর্যবেক্ষক'],[1200,'Planet Hunter','প্ল্যানেট হান্টার'],[2200,'Starlight Legend','স্টারলাইট কিংবদন্তি']];
+const SP=14,$=s=>document.querySelector(s);
+let lg='en',mute=false,G={xp:0,best:[0,0,0]},R=null,ac;
+try{lg=localStorage.getItem('ss_lg')||'en';G=JSON.parse(localStorage.getItem('ss_g'))||G;mute=localStorage.getItem('ss_m')==='1'}catch(e){}
+const L=(a,b)=>lg==='bn'?b:a;
+const save=()=>{try{localStorage.setItem('ss_g',JSON.stringify(G));localStorage.setItem('ss_lg',lg);localStorage.setItem('ss_m',mute?'1':'0')}catch(e){}};
+function snd(f,d){if(mute)return;try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+function prep(i){const s=ST[i];if(s.pts)return s;let seed=7+i;const r=()=>(seed=seed*16807%2147483647)/2147483647,g=()=>Math.sqrt(-2*Math.log(r()+1e-9))*Math.cos(6.283*r());
+ s.pts=[];for(let k=0;k<560;k++){const t=k/560*SP,ph=((t-s.t0)%s.P+s.P)%s.P;let f=1+g()*s.nz;if(ph<s.dur)f-=s.d*Math.min(1,Math.min(ph,s.dur-ph)/.03);s.pts.push([t,f])}
+ s.cent=[0,1,2,3,4].map(k=>s.t0+k*s.P+s.dur/2).filter(c=>c<SP-.2);s.Rr=Math.sqrt(s.d);s.Rp=s.Rr*s.Rs*109.1;
+ s.a=Math.cbrt(s.M*Math.pow(s.P/365.25,2));s.Teq=Math.round(s.T*Math.sqrt(s.Rs*.00465/(2*s.a))*Math.pow(.7,.25));s.cls=s.Rp>8?0:s.Rp>4.5?1:2;return s}
+const rank=()=>{let r=0;RK.forEach((x,i)=>{if(G.xp>=x[0])r=i});return r};
+function render(){$('#lb').textContent=L('বাংলা','English');$('#sb').textContent=mute?'✕':'♪';document.documentElement.lang=lg;
+ const r=rank(),nx=RK[r+1],pct=nx?(G.xp-RK[r][0])/(nx[0]-RK[r][0])*100:100;
+ $('#rk').innerHTML=`${L(RK[r][1],RK[r][2])} · ${G.xp} XP<div class="rank" style="width:150px"><i style="width:${pct}%"></i></div>`;
+ const v=$('#v');v.className='fade';v.innerHTML=!R?map():R.scr==='play'?play():R.scr==='fail'?fail():done();if(R&&R.scr==='play'&&R.ph===0){draw()}}
+function map(){return `<h1>${L('Starlight Stories','স্টারলাইট স্টোরিজ')}<br>${L('Planet Hunter','প্ল্যানেট হান্টার')}</h1>
+<p class="note" style="max-width:560px">${L('Real planets hide in the blinks of distant stars. Scan the light, do the math, and name what you find. Three lives per mission.','দূরের তারার মিটমিটে লুকিয়ে আছে সত্যিকারের গ্রহ। আলো স্ক্যান করো, হিসাব কষো, আর যা পাও তার নাম দাও। প্রতিটি মিশনে তিনটি প্রাণ।')}</p>
+<div class="grid">${ST.map((s,i)=>{const lock=i>0&&!G.best[i-1],b=G.best[i];return `<div class="glass mis ${lock?'lock':''}" style="${b?'--pc:'+s.pc:''}"><div class="orb">${b?'':(lock?'🔒':'?')}</div><div class="big" style="font-size:20px">${s.n}</div>
+<div class="note">${L(s.lv[0],s.lv[1])}</div><div class="stars" aria-label="${b} stars">${'★'.repeat(b)}${'☆'.repeat(3-b)}</div>
+<button data-a="go" data-i="${i}" ${lock?'disabled':''} style="margin-top:10px">${b?L('Replay','আবার খেলো'):L('Start mission','মিশন শুরু')}</button></div>`}).join('')}</div>`}
+const hud=()=>`<div class="hud"><span class="heart" aria-label="lives">${'♥'.repeat(R.lives)}${'♡'.repeat(3-R.lives)}</span><span class="xp">${R.xp} XP</span><span class="cmb">${R.combo>0?'combo ×'+(1+R.combo*.25):L('no combo','কম্বো নেই')}</span></div>`;
+function play(){const s=prep(R.i);let b;
+ if(R.ph===0)b=`<h2>${L('Scan: find the dips','স্ক্যান: ডিপগুলো খোঁজো')}</h2><p class="note">${L('Tap the chart where the star dims. Find two real dips. A wrong tap costs a life.','তারা যেখানে ম্লান হয়, সেখানে চার্টে ট্যাপ করো। দুটি আসল ডিপ খোঁজো। ভুল ট্যাপে একটি প্রাণ যাবে।')}</p>
+ <canvas id="cv" role="img" aria-label="${s.n}"></canvas><div class="row"><button class="alt sm" data-a="hint">${L('Reveal dips (−50 XP)','ডিপ দেখাও (−৫০ XP)')}</button></div>`;
+ else if(R.ph===1){const o=[[s.Rr.toFixed(2),1],[s.d.toFixed(3),0],[(s.Rr*10).toFixed(1),0]];o.unshift(...o.splice(R.i%3+1>2?2:R.i%3+1,1));
+  b=`<h2>${L('Calculate: planet size','হিসাব: গ্রহের আকার')}</h2><p>${L(`Each dip hides <b>${(s.d*100).toFixed(2)}%</b> of the light. dip = (planet radius ÷ star radius)². What is the radius ratio, the square root of ${s.d}?`,`প্রতিটি ডিপে আলোর <b>${(s.d*100).toFixed(2)}%</b> আটকে যায়। ডিপ = (গ্রহের ব্যাসার্ধ ÷ তারার ব্যাসার্ধ)²। ${s.d}-এর বর্গমূল, অর্থাৎ ব্যাসার্ধের অনুপাত কত?`)}</p>${o.map(x=>`<button class="opt" data-a="ans" data-ok="${x[1]}">${x[0]}</button>`).join('')}`}
+ else b=`<h2>${L('Classify your planet','তোমার গ্রহের শ্রেণি দাও')}</h2><p>${L(`Ratio ${s.Rr.toFixed(2)} × star size ${s.Rs} Sun × 109 = <b>${s.Rp.toFixed(1)} × Earth</b>. What type of planet is this?`,`অনুপাত ${s.Rr.toFixed(2)} × তারার আকার ${s.Rs} সূর্য × ১০৯ = <b>${s.Rp.toFixed(1)} × পৃথিবী</b>। এটি কোন ধরনের গ্রহ?`)}</p>${CL.map((c,k)=>`<button class="opt" data-a="ans" data-ok="${k===s.cls?1:0}">${L(c[0],c[1])}</button>`).join('')}`;
+ return `<div class="top"><button class="alt sm" data-a="map">← ${L('Map','মানচিত্র')}</button><span class="note">${s.n} · ${R.ph+1}/3</span></div>${hud()}<div class="glass" id="box">${b}<div class="msg" id="m"></div><div id="nx"></div></div>`}
+function fail(){return `<div class="glass" style="text-align:center;margin-top:30px"><h1 style="font-size:34px">${L('Signal lost','সিগন্যাল হারিয়ে গেছে')}</h1><p>${L('You ran out of lives. Space is hard. Try again.','তোমার প্রাণ শেষ। মহাকাশ কঠিন জায়গা। আবার চেষ্টা করো।')}</p><div class="row" style="justify-content:center"><button data-a="go" data-i="${R.i}">${L('Retry','আবার চেষ্টা')}</button><button class="alt" data-a="map">${L('Map','মানচিত্র')}</button></div></div>`}
+function done(){const s=ST[R.i];return `<div class="glass" style="margin-top:20px;text-align:center"><div class="note">${L('Planet discovered!','গ্রহ আবিষ্কৃত!')}</div><div class="orb" style="--pc:${s.pc};width:130px;height:130px"></div><h1 style="font-size:34px;margin:0">${s.n} b</h1>
+<div class="stars" style="font-size:30px">${'★'.repeat(R.lives)}${'☆'.repeat(3-R.lives)}</div><p class="xp big">+${R.xp} XP</p>
+<div class="stats" style="text-align:left;max-width:420px;margin:12px auto"><div><small>${L('Type','ধরন')}</small><b>${L(CL[s.cls][0].split(' (')[0],CL[s.cls][1].split(' (')[0])}</b></div><div><small>${L('Radius','ব্যাসার্ধ')}</small><b>${s.Rp.toFixed(1)} × ${L('Earth','পৃথিবী')}</b></div><div><small>${L('Orbit','কক্ষপথ')}</small><b>${s.P} ${L('days','দিন')}</b></div><div><small>${L('Heat','তাপ')}</small><b>~${s.Teq} K</b></div></div>
+<p class="note">${L(`Far too hot for liquid water (it boils at 373 K). Not a place for life as we know it.`,`তরল পানির জন্য অনেক বেশি গরম (পানি ফোটে ৩৭৩ K-তে)। আমাদের পরিচিত জীবনের জায়গা নয়।`)}</p>
+<div class="row" style="justify-content:center">${R.i<2?`<button data-a="go" data-i="${R.i+1}">${L('Next mission','পরের মিশন')}</button>`:''}<button class="alt" data-a="copy">${L('Copy discovery','আবিষ্কার কপি করো')}</button><button class="alt" data-a="map">${L('Map','মানচিত্র')}</button></div></div>`}
+function draw(){const cv=$('#cv');if(!cv)return;const s=prep(R.i),r=cv.getBoundingClientRect(),dpr=devicePixelRatio||1;cv.width=r.width*dpr;cv.height=r.height*dpr;
+ const g=cv.getContext('2d');g.scale(dpr,dpr);const W=r.width,H=r.height,p=40,top=1+s.nz*3,bot=1-s.d-s.nz*3,X=t=>p+t/SP*(W-p-10),Y=f=>10+(top-f)/(top-bot)*(H-10-p);cv._p=p;cv._W=W;
+ const cs=getComputedStyle(document.documentElement),m=cs.getPropertyValue('--mute'),ln=cs.getPropertyValue('--line'),te=cs.getPropertyValue('--teal'),am=cs.getPropertyValue('--amber');
+ g.font='11px sans-serif';g.fillStyle=m;g.strokeStyle=ln;for(let k=0;k<5;k++){const v=top-k*(top-bot)/4;g.beginPath();g.moveTo(p,Y(v));g.lineTo(W-10,Y(v));g.stroke();g.fillText(v.toFixed(4),0,Y(v)+4)}
+ for(let d=0;d<=SP;d+=2)g.fillText(d,X(d)-4,H-14);g.fillText(L('days','দিন'),W-30,H-2);g.fillStyle=te;s.pts.forEach(([t,f])=>{g.beginPath();g.arc(X(t),Y(f),1.9,0,7);g.fill()});
+ g.strokeStyle=am;if(R.hint){g.setLineDash([4,4]);s.cent.forEach(c=>{g.beginPath();g.moveTo(X(c),10);g.lineTo(X(c),H-p);g.stroke()});g.setLineDash([])}
+ g.lineWidth=2.5;g.shadowColor=am;g.shadowBlur=12;R.marks.forEach(c=>{g.beginPath();g.moveTo(X(c),10);g.lineTo(X(c),H-p);g.stroke()})}
+function award(n){R.xp+=Math.round(n*(1+R.combo*.25));R.combo++}
+function miss(el){R.lives--;R.combo=0;snd(170,.25);$('#v').classList.remove('shake');void $('#v').offsetWidth;$('#v').classList.add('shake');
+ if(R.lives<=0){G.xp+=R.xp;save();setTimeout(()=>{R.scr='fail';render()},500)}else{const h=$('.hud');if(h)h.outerHTML=hud()}}
+function next(){R.ph++;if(R.ph>2){const s=R.i;G.best[s]=Math.max(G.best[s],R.lives);G.xp+=R.xp;save();R.scr='done';burst()}render()}
+const NX=()=>`<div class="row"><button data-a="adv">${L('Continue','চালিয়ে যাও')}</button></div>`;
+document.addEventListener('click',e=>{const t=e.target,a=t.closest('[data-a]');
+ if(t.id==='cv'){const s=prep(R.i),r=t.getBoundingClientRect(),x=(e.clientX-r.left-t._p)/(t._W-t._p-10)*SP,m=$('#m');if(R.marks.length>=2)return;
+  const h=s.cent.find(c=>Math.abs(c-x)<.5);if(h===undefined){m.className='msg warn';m.textContent=L('Just noise. −1 life.','এটা শুধু নয়েজ। −১ প্রাণ।');miss();return}
+  if(R.marks.includes(h))return;R.marks.push(h);award(100);snd(880,.15);draw();$('.hud').outerHTML=hud();
+  if(R.marks.length>=2){const g=Math.abs(R.marks[1]-R.marks[0]).toFixed(1);m.className='msg good';m.textContent=L(`Pattern locked: a dip every ${g} days. Something is orbiting this star!`,`প্যাটার্ন নিশ্চিত: প্রতি ${g} দিনে একটি ডিপ। কিছু একটা এই তারাকে প্রদক্ষিণ করছে!`);$('#nx').innerHTML=NX()}
+  else{m.className='msg good';m.textContent=L('Nice! One more.','দারুণ! আরেকটি।')}return}
+ if(!a)return;const k=a.dataset.a;
+ if(k==='lang'){lg=lg==='en'?'bn':'en';save();render()}
+ else if(k==='snd'){mute=!mute;save();render()}
+ else if(k==='go'){R={i:+a.dataset.i,scr:'play',ph:0,lives:3,xp:0,combo:0,marks:[],hint:false};render()}
+ else if(k==='map'){R=null;render()}
+ else if(k==='hint'){R.hint=true;R.xp=Math.max(0,R.xp-50);draw();$('.hud').outerHTML=hud()}
+ else if(k==='ans'){const m=$('#m');if(a.dataset.ok==='1'){a.classList.add('ok');award(150);snd(880,.2);document.querySelectorAll('.opt').forEach(x=>x.disabled=true);m.className='msg good';m.textContent=L('Correct!','সঠিক!');$('.hud').outerHTML=hud();$('#nx').innerHTML=NX()}
+  else{a.classList.add('no');a.disabled=true;m.className='msg warn';m.textContent=L('Not quite. −1 life.','ঠিক হয়নি। −১ প্রাণ।');miss()}}
+ else if(k==='adv')next();
+ else if(k==='copy'){const s=ST[R.i],txt=`I discovered ${s.n} b in Starlight Stories: ${s.Rp.toFixed(1)}x Earth, ${s.P}-day orbit, ~${s.Teq} K. #NASASpaceApps`;
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>a.textContent=L('Copied!','কপি হয়েছে!')).catch(()=>a.textContent=L('Copy not available','কপি করা যাচ্ছে না'))}});
+// starfield + confetti
+const cv=$('#bg'),cx=cv.getContext('2d'),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;let SA=[],PA=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight;SA=Array.from({length:Math.round(innerWidth*innerHeight/6000)},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,z:Math.random()*1.4+.3}))}
+function burst(){if(RM)return;for(let i=0;i<90;i++)PA.push({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*12,vy:Math.random()*-9-2,l:70,c:['#ffb347','#5ad1c8','#fff','#ff8ad8'][i%4]});snd(660,.12);setTimeout(()=>snd(990,.25),130)}
+function tick(){cx.clearRect(0,0,cv.width,cv.height);cx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--st');
+ SA.forEach(s=>{if(!RM){s.x-=s.z*.12;if(s.x<0)s.x=cv.width}cx.globalAlpha=.25+s.z*.3;cx.fillRect(s.x,s.y,s.z,s.z)});cx.globalAlpha=1;
+ PA=PA.filter(p=>p.l>0);PA.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.l--;cx.fillStyle=p.c;cx.fillRect(p.x,p.y,6,6)});requestAnimationFrame(tick)}
+addEventListener('resize',()=>{size();draw()});size();tick();render();
+</script>
+</body>
+</html>
