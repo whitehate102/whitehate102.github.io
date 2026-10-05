@@ -1,1 +1,1 @@
-# whitehate102.github.io
+ whitehate102.github.io
